@@ -1118,4 +1118,52 @@ class Contests extends \OmegaUp\DAO\Base\Contests {
             'totalRows' => $totalRows,
         ];
     }
+
+    final public static function getCurrentContests(
+        int $pagina = 1,
+        int $renglones_por_pagina = 1000,
+        int $activos = \OmegaUp\DAO\Enum\ActiveStatus::ALL,
+        int $recomendados = \OmegaUp\DAO\Enum\RecommendedStatus::ALL,
+        ?string $query = null
+    ): array {
+        $offset = ($pagina - 1) * $renglones_por_pagina;
+        $end_check = \OmegaUp\DAO\Enum\ActiveStatus::sql($activos);
+        $recommended_check = \OmegaUp\DAO\Enum\RecommendedStatus::sql(
+            $recomendados
+        );
+        $filter = self::formatSearch($query);
+        $query_check = \OmegaUp\DAO\Enum\FilteredStatus::sql($filter['type']);
+
+        $columns = \OmegaUp\DAO\Contests::$getContestsColumns;
+
+        $sql = "
+               SELECT
+                    $columns
+                FROM
+                    `Contests`
+                WHERE
+                    `admission_mode` <> 'private'
+                    AND $recommended_check
+                    AND $end_check
+                    AND $query_check
+                    AND archived = 0
+                ORDER BY
+                    CASE WHEN original_finish_time > NOW() THEN 1 ELSE 0 END DESC,
+                    `recommended` DESC,
+                    `original_finish_time` DESC
+                LIMIT ?, ?
+                ";
+
+        $params = [];
+        if ($filter['type'] === \OmegaUp\DAO\Enum\FilteredStatus::FULLTEXT) {
+            $params[] = $filter['query'];
+        } elseif ($filter['type'] === \OmegaUp\DAO\Enum\FilteredStatus::SIMPLE) {
+            $params[] = $filter['query'];
+            $params[] = $filter['query'];
+        }
+        $params[] = intval($offset);
+        $params[] = intval($renglones_por_pagina);
+        /** @var list<array{admission_mode: string, alias: string, contest_id: int, description: string, finish_time: \OmegaUp\Timestamp, last_updated: \OmegaUp\Timestamp, original_finish_time: \OmegaUp\Timestamp, partial_score: bool, problemset_id: int, recommended: bool, rerun_id: int, start_time: \OmegaUp\Timestamp, title: string, window_length: int|null}> */
+        return \OmegaUp\MySQLConnection::getInstance()->GetAll($sql, $params);
+    }
 }

@@ -237,6 +237,11 @@ class Contest extends \OmegaUp\Controllers\Controller {
         return $addedContests;
     }
 
+    public static function getContestList2() {
+        $contests = \OmegaUp\DAO\Contests::getCurrentContests();
+        return $contests;
+    }
+
     /**
      * Returns a list of contests where current user has admin rights (or is
      * the director).
@@ -939,6 +944,54 @@ class Contest extends \OmegaUp\Controllers\Controller {
                 ),
             ],
             'entrypoint' => 'arena_contest_list',
+        ];
+    }
+
+    /**
+     * @return array{smartyProperties: array{payload: ContestListPayload, title: \OmegaUp\TranslationString}, entrypoint: string}
+     *
+     * @omegaup-request-param int $page
+     * @omegaup-request-param int $page_size
+     * @omegaup-request-param string $query
+     */
+    public static function getContestListDetailsForTypeScript2(
+        \OmegaUp\Request $r
+    ) {
+        try {
+            $r->ensureIdentity();
+        } catch (\OmegaUp\Exceptions\UnauthorizedException $e) {
+            // Do nothing.
+            $r->identity = null;
+        }
+        $r->ensureOptionalInt('page');
+        $r->ensureOptionalInt('page_size');
+
+        $page = (isset($r['page']) ? intval($r['page']) : 1);
+        $pageSize = (isset($r['page_size']) ? intval($r['page_size']) : 1000);
+        \OmegaUp\Validators::validateStringOfLengthInRange(
+            $r['query'],
+            'query',
+            /*$minLength=*/ 0,
+            /*$maxLength=*/ 256,
+            /*$required=*/ false
+        );
+
+        $contests = [];
+
+        $contests = self::getContestList2();
+
+        return [
+            'smartyProperties' => [
+                'payload' => [
+                    'query' => $r['query'],
+                    'isLogged' => !is_null($r->identity),
+                    'contests' => $contests,
+                ],
+                'title' => new \OmegaUp\TranslationString(
+                    'omegaupTitleContestList'
+                ),
+            ],
+            'entrypoint' => 'arena_contest_list2',
         ];
     }
 
