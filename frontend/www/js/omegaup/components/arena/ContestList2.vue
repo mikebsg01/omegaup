@@ -8,7 +8,8 @@
             <b-card
               v-for="contest of contests.current"
               :key="contest.contest_id"
-              :title="contest.title">
+              :title="contest.title"
+            >
               <b-card-text>
                 {{ contest.description }}
               </b-card-text>
@@ -20,7 +21,8 @@
             <b-card
               v-for="contest of contests.future"
               :key="contest.contest_id"
-              :title="contest.title">
+              :title="contest.title"
+            >
               <b-card-text>
                 {{ contest.description }}
               </b-card-text>
@@ -32,7 +34,8 @@
             <b-card
               v-for="contest of contests.past"
               :key="contest.contest_id"
-              :title="contest.title">
+              :title="contest.title"
+            >
               <b-card-text>
                 {{ contest.description }}
               </b-card-text>
