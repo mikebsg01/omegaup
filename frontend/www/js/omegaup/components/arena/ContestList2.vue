@@ -9,15 +9,20 @@
         pills
         card
         vertical
-        nav-wrapper-class="custom-nav col-2"
+        nav-wrapper-class="custom-nav col-sm-4 col-md-2"
       >
         <b-tab title="Actuales" :title-link-class="titleLinkClass(0)" active>
           <b-card-text>
             <b-card
               v-for="contest of contests.current"
               :key="contest.contest_id"
-              :title="contest.title"
+              class="mb-3"
             >
+              <b-card-title>
+                <a href="#">
+                  {{ contest.title }}
+                </a>
+              </b-card-title>
               <b-card-text>
                 {{ contest.description }}
               </b-card-text>
@@ -29,8 +34,13 @@
             <b-card
               v-for="contest of contests.future"
               :key="contest.contest_id"
-              :title="contest.title"
+              class="mb-3"
             >
+              <b-card-title>
+                <a href="#">
+                  {{ contest.title }}
+                </a>
+              </b-card-title>
               <b-card-text>
                 {{ contest.description }}
               </b-card-text>
@@ -42,8 +52,13 @@
             <b-card
               v-for="contest of contests.past"
               :key="contest.contest_id"
-              :title="contest.title"
+              class="mb-3"
             >
+              <b-card-title>
+                <a href="#">
+                  {{ contest.title }}
+                </a>
+              </b-card-title>
               <b-card-text>
                 {{ contest.description }}
               </b-card-text>
