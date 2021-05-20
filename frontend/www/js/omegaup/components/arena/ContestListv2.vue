@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="col-sm-12">
-      <h1 class="title">{{ T.wordsContests }}</h1>
+      <h1 class="title mb-3">{{ T.wordsContests }}</h1>
     </div>
     <b-card no-body>
       <b-tabs
@@ -18,7 +18,13 @@
           :title-link-class="titleLinkClass(ContestTab.Current)"
           active
         >
-          {{ contests.current }}
+          <b-card 
+            v-for="contest in contests.current"
+            class="mb-3"
+          >
+            <b-card-title>{{contest.title}}</b-card-title>
+            <b-card-text>{{contest}}</b-card-text>
+          </b-card>
         </b-tab>
         <b-tab
           ref="futureContestTab"
