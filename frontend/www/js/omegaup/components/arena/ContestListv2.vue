@@ -20,10 +20,29 @@
         >
           <b-card 
             v-for="contest in contests.current"
+            :key="contest.contest_id"
             class="mb-3"
+            no-body
           >
-            <b-card-title>{{contest.title}}</b-card-title>
-            <b-card-text>{{contest}}</b-card-text>
+            <b-card-body>
+              <b-row>
+                <b-col cols="9">
+                  <b-link :href="`/arena/${contest.alias}`">{{contest.title}}</b-link>
+                  <span>{{contest.organizer}}</span>
+                </b-col>
+                <b-col cols="3">
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col cols="9">
+                  <a :href="getTimeLink(contest.start_time.iso())">{{contest.start_time.long()}}</a>
+                  <span>{{time.toDDHHMM(contest.duration)}}</span>
+                  <span>{{contest.contestants}}</span>
+                </b-col>
+                <b-col cols="3">
+                </b-col>
+              </b-row>
+            </b-card-body>
           </b-card>
         </b-tab>
         <b-tab
@@ -38,7 +57,13 @@
           :title="T.contestListPast"
           :title-link-class="titleLinkClass(ContestTab.Past)"
         >
-          {{ contests.past }}
+          <b-card 
+            v-for="contest in contests.past"
+            class="mb-3"
+          >
+            <b-card-title>{{contest.title}}</b-card-title>
+            <b-card-text>{{contest}}</b-card-text>
+          </b-card>
         </b-tab>
       </b-tabs>
     </b-card>
@@ -49,15 +74,18 @@
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { types } from '../../api_types';
 import T from '../../lang';
+import * as time from '../../time';
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
 // Import Only Required Plugins
-import { TabsPlugin, CardPlugin } from 'bootstrap-vue';
+import { TabsPlugin, CardPlugin, LinkPlugin, LayoutPlugin } from 'bootstrap-vue';
 Vue.use(TabsPlugin);
 Vue.use(CardPlugin);
+Vue.use(LinkPlugin);
+Vue.use(LayoutPlugin);
 
 export enum ContestTab {
   Current = 0,
@@ -71,6 +99,7 @@ export enum ContestTab {
 export default class ArenaContestList extends Vue {
   @Prop() contests!: types.ContestList;
   T = T;
+  time = time;
   ContestTab = ContestTab;
   activeTab: ContestTab = ContestTab.Current;
 
@@ -80,6 +109,10 @@ export default class ArenaContestList extends Vue {
     } else {
       return ['text-center', 'title-link'];
     }
+  }
+
+  getTimeLink(time: string): string {
+    return `http://timeanddate.com/worldclock/fixedtime.html?iso=${time}`;
   }
 }
 </script>
