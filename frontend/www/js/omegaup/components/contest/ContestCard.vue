@@ -42,7 +42,7 @@
               src="/media/contestlist/chronometer.svg"
               class="d-inline-block icon-chronometer"
             />
-					  <span>{{time.toDDHHMM(contest.duration)}} hrs</span>
+					  <span>{{time.toDDHHMM(contest.duration)}}</span>
           </div>
           <div class="d-inline-block contest-card-contestants">
             <img 
@@ -83,14 +83,11 @@ Vue.use(LayoutPlugin);
   filters: {
     datetime(dt: Date) {
       return moment(dt).format('DD/MM/YYYY HH:mm:ss');
-    },
-    duration(seconds: number) {
-      return moment({}).seconds(seconds).format('H:mm');
     }
   }
 })
 export default class FilteredList extends Vue {
-  @Prop() contest: types.ContestListItem;
+  @Prop() contest!: types.ContestListItem;
   T = T;
   ui = ui;
   time = time;
